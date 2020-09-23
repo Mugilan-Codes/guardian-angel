@@ -4,29 +4,34 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const ChoiceScreen = () => {
   return (
-    <View style={styles.cotainer}>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.btnText}>User</Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.btnText}>Guardian</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.btnText}>User</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  cotainer: {
+  container: {
     flex: 1,
-    justifyContent: 'space-around',
     alignItems: 'center',
+    justifyContent: 'space-evenly',
+    backgroundColor: '#00de32',
   },
   button: {
+    // flex: 1,
+    borderWidth: 10,
+    borderColor: '#ff3d45',
+    elevation: 8,
     padding: 50,
-    backgroundColor: '#34e3f4',
+    backgroundColor: '#ff34c3',
   },
   btnText: {
-    fontSize: 40,
+    fontSize: 30,
     textTransform: 'uppercase',
     fontWeight: 'bold',
   },
