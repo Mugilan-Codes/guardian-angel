@@ -5,12 +5,16 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 const ChoiceScreen = () => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.btnText}>Guardian</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.btnText}>User</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Guardian</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>User</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -20,20 +24,22 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    backgroundColor: '#00de32',
+  },
+  buttonContainer: {
+    // margin: 20,
+    flex: 1,
+    justifyContent: 'center',
+    width: '100%',
   },
   button: {
-    // flex: 1,
-    borderWidth: 10,
-    borderColor: '#ff3d45',
-    elevation: 8,
-    padding: 50,
-    backgroundColor: '#ff34c3',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
   },
-  btnText: {
-    fontSize: 30,
+  buttonText: {
+    fontSize: 50,
     textTransform: 'uppercase',
-    fontWeight: 'bold',
   },
 });
 
