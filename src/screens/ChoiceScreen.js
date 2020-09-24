@@ -8,7 +8,7 @@ const ChoiceScreen = ({ navigation }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('GuardianHome')}
         >
           <Text style={styles.buttonText}>Guardian</Text>
         </TouchableOpacity>

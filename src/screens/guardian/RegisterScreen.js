@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { createAccount } from '../../api/mock';
+import { setToken } from '../../api/token';
 
 const RegisterScreen = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
-  const createGuardian = () => {
+  const createGuardian = async () => {
     setErrorMessage('');
     createAccount('test@test.ca', 'password')
-      .then((val) => {
+      .then(async (val) => {
+        await setToken(val.auth_token);
         navigation.navigate('GuardianHome');
       })
       .catch((err) => {

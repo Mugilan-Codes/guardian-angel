@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { getUsers } from '../../api/mock';
+import { setToken } from '../../api/token';
 
 export default class GuardianHome extends Component {
   state = {
@@ -37,13 +38,22 @@ export default class GuardianHome extends Component {
     this.loadUsers();
   }
 
+  logout = async () => {
+    await setToken('');
+    this.props.navigation.navigate('Login');
+  };
+
   render() {
+    const { users, userLoadingErrorMessage } = this.state;
     return (
       <View style={styles.container}>
         <Text>Guardian Home With Map</Text>
         {this.state.users.map((user) => (
           <Text key={user.email}>{user.email}</Text>
         ))}
+        {userLoadingErrorMessage ? (
+          <Text>{userLoadingErrorMessage}</Text>
+        ) : null}
         <Button
           title='Log Out'
           onPress={() => this.props.navigation.navigate('Login')}

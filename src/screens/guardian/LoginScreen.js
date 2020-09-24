@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { login } from '../../api/mock';
+import { setToken } from '../../api/token';
 
 const LoginScreen = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
-  const loginUser = () => {
+  const loginUser = async () => {
     setErrorMessage('');
-    login('test@test.ca', 'password', false)
-      .then(() => {
+    login('test@test.ca', 'password')
+      .then(async (res) => {
+        await setToken(res.auth_token);
         navigation.navigate('GuardianHome');
       })
       .catch((err) => {
