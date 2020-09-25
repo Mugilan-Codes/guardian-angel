@@ -1,22 +1,20 @@
-import React from 'react';
-import { Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { login } from '../../api/mock';
 import EmailForm from '../../forms/EmailForm';
+import FormButton from '../../components/FormButton';
+import FormInput from '../../components/FormInput';
 
 const LoginScreen = ({ navigation }) => {
-  return (
-    <EmailForm
-      buttonText='Log In'
-      onSubmit={login}
-      onAuthentication={() => navigation.navigate('GuardianHome')}
-    >
-      <Button
-        title='Create Account'
-        onPress={() => navigation.navigate('Register')}
-      />
-    </EmailForm>
-  );
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  return <View style={styles.container}></View>;
 };
+
+const styles = StyleSheet.create({
+  container: {},
+});
 
 export default LoginScreen;
