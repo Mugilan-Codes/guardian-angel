@@ -14,7 +14,10 @@ const ChoiceScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('UserLogin')}
+        >
           <Text style={styles.buttonText}>User</Text>
         </TouchableOpacity>
       </View>
