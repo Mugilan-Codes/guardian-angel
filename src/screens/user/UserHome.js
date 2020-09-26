@@ -9,15 +9,12 @@ const UserHome = ({ navigation }) => {
     firebase_auth.onAuthStateChanged((user) => {
       if (user) {
         setUserEmail(user.email);
+        console.log(user.displayName);
       } else {
         navigation.navigate('UserLogin');
       }
     });
   }, [setUserEmail]);
-
-  const getUser = () => {
-    console.log(firebase_auth.currentUser.email);
-  };
 
   const signOut = async () => {
     try {
@@ -32,7 +29,6 @@ const UserHome = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text>User Home with History {userEmail}</Text>
-      <Button title='Current User' onPress={getUser} />
       <Button title='Sign Out' onPress={signOut} />
     </View>
   );

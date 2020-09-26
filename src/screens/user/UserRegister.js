@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,23 +14,53 @@ import { windowHeight, windowWidth } from '../../utils/Dimensions';
 const UserRegister = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const user = firebase_auth.currentUser;
+    if (user) {
+      navigation.navigate('UserHome');
+    }
+  });
 
   const signUp = async () => {
+    setErrorMessage('');
     try {
       const user = await firebase_auth.createUserWithEmailAndPassword(
         email,
         password
       );
+      if (user) {
+        await firebase_auth.currentUser.updateProfile({
+          displayName: name,
+        });
+        alert('Registered Successfully');
+        setEmail('');
+        setPassword('');
+        navigation.navigate('UserHome');
+      }
       console.log({ user });
     } catch (err) {
-      console.log(err.code);
-      alert(err.message);
+      console.log(`User Register Error: ${err.code} - ${err.message}`);
+      setErrorMessage(err.message);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Register to be a User</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        placeholder='Name'
+        placeholderTextColor='#666'
+        numberOfLines={1}
+        onChangeText={(userName) => setName(userName)}
+        autoCapitalize='none'
+        autoCorrect={false}
+        autoFocus
+      />
       <TextInput
         style={styles.input}
         value={email}
@@ -51,6 +81,7 @@ const UserRegister = ({ navigation }) => {
         onChangeText={(userPassword) => setPassword(userPassword)}
         secureTextEntry
       />
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
       <FormButton buttonTitle='Register' onPress={signUp} />
       <TouchableOpacity
         style={styles.navButton}

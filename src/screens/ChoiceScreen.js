@@ -16,7 +16,7 @@ const ChoiceScreen = ({ navigation }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('UserLogin')}
+          onPress={() => navigation.navigate('UserHome')}
         >
           <Text style={styles.buttonText}>User</Text>
         </TouchableOpacity>

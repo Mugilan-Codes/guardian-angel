@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,13 @@ const UserLogin = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    const user = firebase_auth.currentUser;
+    if (user) {
+      navigation.navigate('UserHome');
+    }
+  });
+
   const signIn = async (email, password) => {
     try {
       const user = await firebase_auth.signInWithEmailAndPassword(
@@ -22,7 +29,6 @@ const UserLogin = ({ navigation }) => {
         password
       );
       if (user) {
-        alert('Registered Successfully');
         setEmail('');
         setPassword('');
         navigation.navigate('UserHome');

@@ -1,43 +1,157 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { createAccount } from '../../api/mock';
-import { setToken } from '../../api/token';
+import FormButton from '../../components/FormButton';
+import { windowHeight, windowWidth } from '../../utils/Dimensions';
+import { firestore } from '../../database/firebaseDB';
 
 const RegisterScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [vehicleNumber, setVehicleNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const createGuardian = async () => {
+  const createGuardian = async (email) => {
+    const docRef = firestore.collection('guardian').doc(email);
+
+    await docRef.set({
+      name,
+      email,
+      password,
+      phone_number: phoneNumber,
+      vehicle_number: vehicleNumber,
+      created_on: new Date(),
+      updated_on: new Date(),
+    });
+
+    setPhoneNumber('');
+    setVehicleNumber('');
+  };
+
+  const signUp = async () => {
     setErrorMessage('');
-    createAccount('test@test.ca', 'password')
-      .then(async (val) => {
-        await setToken(val.auth_token);
+    try {
+      const user = await firebase_auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      if (user) {
+        await firebase_auth.currentUser.updateProfile({
+          displayName: name,
+        });
+        await createGuardian(email);
+        alert('Registered Successfully');
+        setName('');
+        setEmail('');
+        setPassword('');
         navigation.navigate('GuardianHome');
-      })
-      .catch((err) => {
-        console.log('error: ' + err.message);
-        setErrorMessage(err.message);
-      });
+      }
+      console.log({ user });
+    } catch (err) {
+      console.log(`Guardian Register Error: ${err.code} - ${err.message}`);
+      setErrorMessage(err.message);
+    }
   };
 
   return (
-    <View style={styles.formView}>
-      <Text>Ambulance Register</Text>
-      <Button title='Register' onPress={createGuardian} />
-      <Button
-        title='Sign In'
-        onPress={() => navigation.navigate('Login')}
-      ></Button>
+    <View style={styles.container}>
+      <Text style={styles.text}>Register to be a Guardian</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        placeholder='Name'
+        placeholderTextColor='#666'
+        numberOfLines={1}
+        onChangeText={(userName) => setName(userName)}
+        autoCapitalize='none'
+        autoCorrect={false}
+      />
+      <TextInput
+        style={styles.input}
+        value={email}
+        placeholder='E-Mail'
+        placeholderTextColor='#666'
+        numberOfLines={1}
+        onChangeText={(userEmail) => setEmail(userEmail)}
+        autoCapitalize='none'
+        keyboardType='email-address'
+        autoCorrect={false}
+      />
+      <TextInput
+        style={styles.input}
+        value={password}
+        placeholder='Password'
+        placeholderTextColor='#666'
+        numberOfLines={1}
+        onChangeText={(userPassword) => setPassword(userPassword)}
+        secureTextEntry
+      />
+      <TextInput
+        style={styles.input}
+        value={vehicleNumber}
+        placeholder="Vehicle Number: 'TN02AT3245'"
+        placeholderTextColor='#666'
+        numberOfLines={1}
+        onChangeText={(vehicleNum) => setVehicleNumber(vehicleNum)}
+        autoCapitalize='characters'
+        autoCorrect={false}
+      />
+      <TextInput
+        style={styles.input}
+        value={phoneNumber}
+        placeholder='Phone Number'
+        placeholderTextColor='#666'
+        numberOfLines={1}
+        onChangeText={(phNum) => setPhoneNumber(phNum)}
+        keyboardType='phone-pad'
+      />
       {errorMessage ? <Text>{errorMessage}</Text> : null}
+      <FormButton buttonTitle='Register' onPress={signUp} />
+      <TouchableOpacity
+        style={styles.navButton}
+        onPress={() => navigation.navigate('Login')}
+      >
+        <Text style={styles.navButtonText}>Already a user? Sign In Here</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.navButton}
+        onPress={() => navigation.navigate('Choice')}
+      >
+        <Text style={styles.navButtonText}>Go Back To Choice Screen</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  formView: {
+  container: {
+    backgroundColor: '#f5f5f5',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  input: {
+    padding: 10,
+    marginTop: 5,
+    marginBottom: 10,
+    width: windowWidth / 1.5,
+    height: windowHeight / 15,
+    fontSize: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  navButton: {
+    marginTop: 10,
+  },
+  navButtonText: {
+    fontSize: 20,
+    color: '#6646ee',
   },
 });
 
