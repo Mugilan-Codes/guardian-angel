@@ -23,7 +23,8 @@ const UserRegister = ({ navigation }) => {
       );
       console.log({ user });
     } catch (err) {
-      console.log(err.message);
+      console.log(err.code);
+      alert(err.message);
     }
   };
 

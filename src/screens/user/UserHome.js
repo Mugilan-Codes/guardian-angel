@@ -1,12 +1,49 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { firebase_auth } from '../../database/firebaseDB';
 
 const UserHome = ({ navigation }) => {
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    firebase_auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email);
+      } else {
+        navigation.navigate('UserLogin');
+      }
+    });
+  }, [setUserEmail]);
+
+  const getUser = () => {
+    console.log(firebase_auth.currentUser.email);
+  };
+
+  const signOut = async () => {
+    try {
+      await firebase_auth.signOut();
+      console.log('Signed Out');
+      navigation.navigate('UserLogin');
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   return (
-    <View>
-      <Text>User Home with History tab</Text>
+    <View style={styles.container}>
+      <Text>User Home with History {userEmail}</Text>
+      <Button title='Current User' onPress={getUser} />
+      <Button title='Sign Out' onPress={signOut} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default UserHome;

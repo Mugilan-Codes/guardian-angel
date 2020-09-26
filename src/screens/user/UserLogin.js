@@ -15,14 +15,16 @@ const UserLogin = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const signIn = async () => {
+  const signIn = async (email, password) => {
     try {
       const user = await firebase_auth.signInWithEmailAndPassword(
         email,
         password
       );
       if (user) {
-        alert('User: ' + user.user.email);
+        alert('Registered Successfully');
+        setEmail('');
+        setPassword('');
         navigation.navigate('UserHome');
       }
       console.log({ user });
@@ -55,7 +57,7 @@ const UserLogin = ({ navigation }) => {
         onChangeText={(userPassword) => setPassword(userPassword)}
         secureTextEntry
       />
-      <FormButton buttonTitle='Login' onPress={signIn} />
+      <FormButton buttonTitle='Login' onPress={() => signIn(email, password)} />
       <TouchableOpacity
         style={styles.navButton}
         onPress={() => navigation.navigate('UserRegister')}
