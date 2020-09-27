@@ -24,7 +24,8 @@ export const storeRole = async (role = 'guardian') => {
   try {
     await AsyncStorage.setItem('@user_role', role);
   } catch (e) {
-    // saving error
+    console.log(`Storing Role Error: ${e}`);
+    return null;
   }
 };
 
@@ -35,6 +36,7 @@ export const getRole = async () => {
       return value;
     }
   } catch (e) {
-    // error reading value
+    console.log(`Getting Role Error: ${e}`);
+    return null;
   }
 };

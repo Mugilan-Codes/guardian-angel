@@ -10,6 +10,7 @@ import {
 import { firebase_auth } from '../../database/firebaseDB';
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
+import { storeRole, storeToken } from '../../api/token';
 
 const UserLogin = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -31,6 +32,8 @@ const UserLogin = ({ navigation }) => {
       if (user) {
         setEmail('');
         setPassword('');
+        storeToken(user);
+        storeRole('user');
         navigation.navigate('UserHome');
       }
       console.log({ user });

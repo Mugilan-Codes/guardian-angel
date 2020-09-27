@@ -10,6 +10,7 @@ import {
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
 import { firestore, firebase_auth } from '../../database/firebaseDB';
+import { storeRole, storeToken } from '../../api/token';
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -53,6 +54,8 @@ const RegisterScreen = ({ navigation }) => {
         setName('');
         setEmail('');
         setPassword('');
+        storeToken(user);
+        storeRole();
         navigation.navigate('GuardianHome');
       }
       console.log({ user });
