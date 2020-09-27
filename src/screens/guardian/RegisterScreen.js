@@ -58,7 +58,6 @@ const RegisterScreen = ({ navigation }) => {
         storeRole();
         navigation.navigate('GuardianHome');
       }
-      console.log({ user });
     } catch (err) {
       console.log(`Guardian Register Error: ${err.code} - ${err.message}`);
       setErrorMessage(err.message);

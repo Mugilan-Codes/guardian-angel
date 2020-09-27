@@ -40,3 +40,15 @@ export const getRole = async () => {
     return null;
   }
 };
+
+export const removeTokenAndRole = async () => {
+  const keys = ['@user_data', '@user_role'];
+  try {
+    await AsyncStorage.multiRemove(keys);
+  } catch (e) {
+    console.log(`Removing Token and Role from Storage Error: ${e}`);
+    return null;
+  }
+
+  console.log('Async Storage Cleared');
+};
