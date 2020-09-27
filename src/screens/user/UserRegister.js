@@ -27,14 +27,15 @@ const UserRegister = ({ navigation }) => {
   const signUp = async () => {
     setErrorMessage('');
     try {
-      const user = await firebase_auth.createUserWithEmailAndPassword(
+      let user = await firebase_auth.createUserWithEmailAndPassword(
         email,
         password
       );
       if (user) {
-        await firebase_auth.currentUser.updateProfile({
+        user = await firebase_auth.currentUser.updateProfile({
           displayName: name,
         });
+        console.log(user.user);
         alert('Registered Successfully');
         setEmail('');
         setPassword('');

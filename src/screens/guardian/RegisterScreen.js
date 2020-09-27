@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
-import { firestore } from '../../database/firebaseDB';
+import { firestore, firebase_auth } from '../../database/firebaseDB';
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -14,7 +20,7 @@ const RegisterScreen = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const createGuardian = async (email) => {
-    const docRef = firestore.collection('guardian').doc(email);
+    const docRef = firestore.collection('guardians').doc(email);
 
     await docRef.set({
       name,
@@ -24,6 +30,7 @@ const RegisterScreen = ({ navigation }) => {
       vehicle_number: vehicleNumber,
       created_on: new Date(),
       updated_on: new Date(),
+      available: true,
     });
 
     setPhoneNumber('');
