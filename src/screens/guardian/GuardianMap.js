@@ -17,8 +17,6 @@ const GuardianMap = () => {
       }
 
       let location = await Location.getCurrentPositionAsync();
-      // location.coords.latitude
-      console.log(`Location of Guardian: ${JSON.stringify(location)}`);
       setLocation(location);
       setLatitude(location.coords.latitude);
       setLongitude(location.coords.longitude);

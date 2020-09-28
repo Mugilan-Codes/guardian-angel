@@ -1,31 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text, View, Button } from 'react-native';
 import { firebase_auth } from '../../database/firebaseDB';
 
-const GuardianProfile = ({ navigation }) => {
-  const [userData, setUserData] = useState({});
-  useEffect(() => {
-    firebase_auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserData(JSON.stringify(user));
-        console.log(JSON.parse(userData));
-      }
-    });
-  }, []);
+import { AuthContext } from '../../navigations/AuthProvider';
 
-  const signOut = async () => {
-    try {
-      await firebase_auth.signOut();
-      navigation.navigate('Login');
-    } catch (err) {
-      console.log(err);
-    }
-  };
+const GuardianProfile = ({ navigation }) => {
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <View>
       <Text>Profile Page</Text>
-      <Button title='Log-Out' onPress={signOut} />
+      <Text>{user.email}</Text>
+      <Button title='Log-Out' onPress={logout} />
     </View>
   );
 };

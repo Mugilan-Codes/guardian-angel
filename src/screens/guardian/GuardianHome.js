@@ -7,7 +7,7 @@ import GuardianProfile from './GuardianProfile';
 
 const Tab = createMaterialTopTabNavigator();
 
-const GuardianHome = ({ navigation }) => {
+const GuardianHome = () => {
   return (
     <Tab.Navigator initialRouteName='Map' tabBarPosition='bottom'>
       <Tab.Screen name='History' component={GuardianHistory} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,13 @@ import {
 
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
+import { AuthContext } from '../../navigations/AuthProvider';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const { login, setRole } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
@@ -37,7 +40,13 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={(userPassword) => setPassword(userPassword)}
         secureTextEntry
       />
-      <FormButton buttonTitle='Login' onPress={() => alert('Login Button')} />
+      <FormButton
+        buttonTitle='Login'
+        onPress={() => {
+          login(email, password);
+          setRole('guardian');
+        }}
+      />
       <TouchableOpacity
         style={styles.navButton}
         onPress={() => navigation.navigate('Register')}

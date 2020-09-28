@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,7 +10,7 @@ import {
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
 import { firestore, firebase_auth } from '../../database/firebaseDB';
-import { removeTokenAndRole, storeRole, storeToken } from '../../api/token';
+import { AuthContext } from '../../navigations/AuthProvider';
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -19,6 +19,8 @@ const RegisterScreen = ({ navigation }) => {
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  const { register, setRole } = useContext(AuthContext);
 
   const createGuardian = async (email) => {
     const docRef = firestore.collection('guardians').doc(email);
@@ -38,27 +40,11 @@ const RegisterScreen = ({ navigation }) => {
     setVehicleNumber('');
   };
 
-  const signUp = async () => {
-    setErrorMessage('');
+  const signUp = async (email, password) => {
     try {
-      await removeTokenAndRole();
-      const user = await firebase_auth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      if (user) {
-        await firebase_auth.currentUser.updateProfile({
-          displayName: name,
-        });
-        await createGuardian(email);
-        alert('Registered Successfully');
-        await storeToken(user);
-        await storeRole();
-        setName('');
-        setEmail('');
-        setPassword('');
-        navigation.navigate('GuardianHome');
-      }
+      await createGuardian(email);
+      register(email, password);
+      setRole('guardian');
     } catch (err) {
       console.log(`Guardian Register Error: ${err.code} - ${err.message}`);
       setErrorMessage(err.message);
@@ -107,6 +93,7 @@ const RegisterScreen = ({ navigation }) => {
         onChangeText={(vehicleNum) => setVehicleNumber(vehicleNum)}
         autoCapitalize='characters'
         autoCorrect={false}
+        maxLength={10}
       />
       <TextInput
         style={styles.input}
@@ -116,14 +103,20 @@ const RegisterScreen = ({ navigation }) => {
         numberOfLines={1}
         onChangeText={(phNum) => setPhoneNumber(phNum)}
         keyboardType='phone-pad'
+        maxLength={10}
       />
       {errorMessage ? <Text>{errorMessage}</Text> : null}
-      <FormButton buttonTitle='Register' onPress={signUp} />
+      <FormButton
+        buttonTitle='Register'
+        onPress={() => signUp(email, password)}
+      />
       <TouchableOpacity
         style={styles.navButton}
         onPress={() => navigation.navigate('Login')}
       >
-        <Text style={styles.navButtonText}>Already a user? Sign In Here</Text>
+        <Text style={styles.navButtonText}>
+          Already a Guardian? Sign In Here
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.navButton}
