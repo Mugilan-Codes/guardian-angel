@@ -9,7 +9,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const GuardianHome = ({ navigation }) => {
   return (
-    <Tab.Navigator initialRouteName='Map'>
+    <Tab.Navigator initialRouteName='Map' tabBarPosition='bottom'>
       <Tab.Screen name='History' component={GuardianHistory} />
       <Tab.Screen name='Map' component={GuardianMap} />
       <Tab.Screen name='Profile' component={GuardianProfile} />
