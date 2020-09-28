@@ -10,7 +10,7 @@ import {
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
 import { firestore, firebase_auth } from '../../database/firebaseDB';
-import { storeRole, storeToken } from '../../api/token';
+import { removeTokenAndRole, storeRole, storeToken } from '../../api/token';
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -41,6 +41,7 @@ const RegisterScreen = ({ navigation }) => {
   const signUp = async () => {
     setErrorMessage('');
     try {
+      await removeTokenAndRole();
       const user = await firebase_auth.createUserWithEmailAndPassword(
         email,
         password
@@ -51,11 +52,11 @@ const RegisterScreen = ({ navigation }) => {
         });
         await createGuardian(email);
         alert('Registered Successfully');
+        await storeToken(user);
+        await storeRole();
         setName('');
         setEmail('');
         setPassword('');
-        storeToken(user);
-        storeRole();
         navigation.navigate('GuardianHome');
       }
     } catch (err) {

@@ -17,6 +17,8 @@ export const storeToken = async (user) => {
     console.log(`Storing Token Error: ${e}`);
     return null;
   }
+
+  console.log('Stored Token');
 };
 
 // 'user' or ['guardian']
@@ -27,6 +29,8 @@ export const storeRole = async (role = 'guardian') => {
     console.log(`Storing Role Error: ${e}`);
     return null;
   }
+
+  console.log(`Stored Role as ${role}`);
 };
 
 export const getRole = async () => {

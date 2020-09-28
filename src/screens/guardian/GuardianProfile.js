@@ -8,7 +8,7 @@ const GuardianProfile = ({ navigation }) => {
     firebase_auth.onAuthStateChanged((user) => {
       if (user) {
         setUserData(JSON.stringify(user));
-        console.log({ userData });
+        console.log(JSON.parse(userData));
       }
     });
   }, []);
