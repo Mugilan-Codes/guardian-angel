@@ -71,7 +71,7 @@ const UserLogin = ({ navigation }) => {
         style={styles.navButton}
         onPress={() => navigation.navigate('UserRegister')}
       >
-        <Text style={styles.navButtonText}>New Guardian? Join Here</Text>
+        <Text style={styles.navButtonText}>New User? Join Here</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.navButton}
