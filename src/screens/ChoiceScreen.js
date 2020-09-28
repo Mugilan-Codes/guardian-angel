@@ -10,15 +10,15 @@ const ChoiceScreen = ({ navigation }) => {
           style={styles.button}
           onPress={() => navigation.navigate('GuardianStack')}
         >
-          <Text style={styles.buttonText}>Guardian</Text>
+          <Text style={styles.buttonText}>Guardian Angel</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('UserHome')}
+          onPress={() => navigation.navigate('SaverStack')}
         >
-          <Text style={styles.buttonText}>User</Text>
+          <Text style={styles.buttonText}>Saver</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     fontSize: 50,
     textTransform: 'uppercase',
     color: '#fff',
+    textAlign: 'center',
   },
 });
 

@@ -7,7 +7,7 @@ import Loading from '../../components/Loading';
 import HomeStack from './HomeStack';
 import AuthStack from './AuthStack';
 
-const GuardianRoutes = () => {
+const SaverRoutes = () => {
   const { user, setUser } = useContext(AuthContext);
   const { role, setRole } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const GuardianRoutes = () => {
 
   const onAuthStateChanged = (user) => {
     setUser(user);
-    setRole('guardian');
+    setRole('saver');
     if (initializing) setInitializing(false);
     setLoading(false);
   };
@@ -29,11 +29,11 @@ const GuardianRoutes = () => {
     return <Loading />;
   }
 
-  if (user && role == 'guardian') {
+  if (user && role == 'saver') {
     return <HomeStack />;
   } else {
     return <AuthStack />;
   }
 };
 
-export default GuardianRoutes;
+export default SaverRoutes;
