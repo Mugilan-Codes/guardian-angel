@@ -12,12 +12,12 @@ const UserHome = ({ navigation }) => {
   const { user, logout } = useContext(AuthContext);
   return (
     <Drawer.Navigator
-      initialRouteName='Home'
+      initialRouteName='UserSubmitHome'
       drawerContent={() => (
         <UserSidebar navigation={navigation} user={user} logout={logout} />
       )}
     >
-      <Drawer.Screen name='Home' component={UserSubmit} />
+      <Drawer.Screen name='UserSubmitHome' component={UserSubmit} />
       <Drawer.Screen name='History' component={UserHistory} />
     </Drawer.Navigator>
   );
