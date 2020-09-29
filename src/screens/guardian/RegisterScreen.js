@@ -9,7 +9,7 @@ import {
 
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
-import { firestore, firebase_auth } from '../../database/firebaseDB';
+import { firestore } from '../../database/firebaseDB';
 import { AuthContext } from '../../navigations/AuthProvider';
 
 const RegisterScreen = ({ navigation }) => {
@@ -41,6 +41,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const signUp = async (email, password) => {
+    setErrorMessage('');
     try {
       await createGuardian(email);
       register(email, password);

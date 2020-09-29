@@ -14,16 +14,18 @@ export const AuthProvider = ({ children }) => {
         setUser,
         role,
         setRole,
-        login: async (email, password) => {
+        login: async (email, password, role = 'guardian') => {
           try {
             await firebase_auth.signInWithEmailAndPassword(email, password);
+            setRole(role);
           } catch (err) {
             console.log(err);
           }
         },
-        register: async (email, password) => {
+        register: async (email, password, role = 'guardian') => {
           try {
             await firebase_auth.createUserWithEmailAndPassword(email, password);
+            setRole(role);
           } catch (err) {
             console.log(err);
           }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   TextInput,
 } from 'react-native';
 
-import { firebase_auth } from '../../database/firebaseDB';
+import { firestore } from '../../database/firebaseDB';
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
-import { storeToken } from '../../api/token';
+import { AuthContext } from '../../navigations/AuthProvider';
 
 const UserRegister = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -18,33 +18,25 @@ const UserRegister = ({ navigation }) => {
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    const user = firebase_auth.currentUser;
-    if (user) {
-      navigation.navigate('UserHome');
-    }
-  });
+  const { register } = useContext(AuthContext);
 
-  const signUp = async () => {
+  const createSaver = async (email) => {
+    const docRef = firestore.collection('savers').doc(email);
+
+    await docRef.set({
+      name,
+      email,
+      password,
+      created_on: new Date(),
+      updated_on: new Date(),
+    });
+  };
+
+  const signUp = async (email, password) => {
     setErrorMessage('');
     try {
-      let user = await firebase_auth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      if (user) {
-        user = await firebase_auth.currentUser.updateProfile({
-          displayName: name,
-        });
-        console.log(user.user);
-        alert('Registered Successfully');
-        setEmail('');
-        setPassword('');
-        storeToken(user);
-        storeRole('user');
-        navigation.navigate('UserHome');
-      }
-      console.log({ user });
+      await createSaver(email);
+      register(email, password, 'saver');
     } catch (err) {
       console.log(`User Register Error: ${err.code} - ${err.message}`);
       setErrorMessage(err.message);
@@ -86,10 +78,13 @@ const UserRegister = ({ navigation }) => {
         secureTextEntry
       />
       {errorMessage ? <Text>{errorMessage}</Text> : null}
-      <FormButton buttonTitle='Register' onPress={signUp} />
+      <FormButton
+        buttonTitle='Register'
+        onPress={() => signUp(email, password)}
+      />
       <TouchableOpacity
         style={styles.navButton}
-        onPress={() => navigation.navigate('UserLogin')}
+        onPress={() => navigation.navigate('Login')}
       >
         <Text style={styles.navButtonText}>Already a user? Sign In Here</Text>
       </TouchableOpacity>

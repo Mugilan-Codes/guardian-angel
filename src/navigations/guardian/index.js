@@ -9,18 +9,17 @@ import AuthStack from './AuthStack';
 
 const GuardianRoutes = () => {
   const { user, setUser } = useContext(AuthContext);
-  const { role, setRole } = useContext(AuthContext);
+  const { role } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     const subscriber = firebase_auth.onAuthStateChanged(onAuthStateChanged);
     return subscriber;
-  }, []);
+  }, [onAuthStateChanged]);
 
   const onAuthStateChanged = (user) => {
     setUser(user);
-    setRole('guardian');
     if (initializing) setInitializing(false);
     setLoading(false);
   };

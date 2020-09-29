@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,41 +7,15 @@ import {
   TextInput,
 } from 'react-native';
 
-import { firebase_auth } from '../../database/firebaseDB';
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
-import { storeRole, storeToken } from '../../api/token';
+import { AuthContext } from '../../navigations/AuthProvider';
 
 const UserLogin = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    const user = firebase_auth.currentUser;
-    if (user) {
-      navigation.navigate('UserHome');
-    }
-  });
-
-  const signIn = async (email, password) => {
-    try {
-      const user = await firebase_auth.signInWithEmailAndPassword(
-        email,
-        password
-      );
-      if (user) {
-        setEmail('');
-        setPassword('');
-        storeToken(user);
-        storeRole('user');
-        navigation.navigate('UserHome');
-      }
-      console.log({ user });
-    } catch (err) {
-      console.log(err.message);
-      alert(err.message);
-    }
-  };
+  const { login } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
@@ -66,10 +40,13 @@ const UserLogin = ({ navigation }) => {
         onChangeText={(userPassword) => setPassword(userPassword)}
         secureTextEntry
       />
-      <FormButton buttonTitle='Login' onPress={() => signIn(email, password)} />
+      <FormButton
+        buttonTitle='Login'
+        onPress={() => login(email, password, 'saver')}
+      />
       <TouchableOpacity
         style={styles.navButton}
-        onPress={() => navigation.navigate('UserRegister')}
+        onPress={() => navigation.navigate('Register')}
       >
         <Text style={styles.navButtonText}>New User? Join Here</Text>
       </TouchableOpacity>
