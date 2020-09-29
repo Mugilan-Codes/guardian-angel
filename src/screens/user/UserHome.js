@@ -1,24 +1,26 @@
 import React, { useContext } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
 import { AuthContext } from '../../navigations/AuthProvider';
+import UserSubmit from './UserSubmit';
+import UserHistory from './UserHistory';
+import UserSidebar from './UserSidebar';
+
+const Drawer = createDrawerNavigator();
 
 const UserHome = ({ navigation }) => {
   const { user, logout } = useContext(AuthContext);
-
   return (
-    <View style={styles.container}>
-      <Text>User Home with History {user.email}</Text>
-      <Button title='Sign Out' onPress={logout} />
-    </View>
+    <Drawer.Navigator
+      initialRouteName='Home'
+      drawerContent={() => (
+        <UserSidebar navigation={navigation} user={user} logout={logout} />
+      )}
+    >
+      <Drawer.Screen name='Home' component={UserSubmit} />
+      <Drawer.Screen name='History' component={UserHistory} />
+    </Drawer.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default UserHome;
