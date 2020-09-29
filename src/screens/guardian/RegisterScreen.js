@@ -20,7 +20,7 @@ const RegisterScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { register, setRole } = useContext(AuthContext);
+  const { register } = useContext(AuthContext);
 
   const createGuardian = async (email) => {
     const docRef = firestore.collection('guardians').doc(email);
@@ -45,7 +45,6 @@ const RegisterScreen = ({ navigation }) => {
     try {
       await createGuardian(email);
       register(email, password);
-      setRole('guardian');
     } catch (err) {
       console.log(`Guardian Register Error: ${err.code} - ${err.message}`);
       setErrorMessage(err.message);

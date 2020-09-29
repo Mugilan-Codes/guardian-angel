@@ -15,7 +15,7 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { login, setRole } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
@@ -40,13 +40,7 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={(userPassword) => setPassword(userPassword)}
         secureTextEntry
       />
-      <FormButton
-        buttonTitle='Login'
-        onPress={() => {
-          login(email, password);
-          setRole('guardian');
-        }}
-      />
+      <FormButton buttonTitle='Login' onPress={() => login(email, password)} />
       <TouchableOpacity
         style={styles.navButton}
         onPress={() => navigation.navigate('Register')}
