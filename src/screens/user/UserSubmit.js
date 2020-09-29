@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-import { firebase_storage_ref } from '../../database/firebaseDB';
+import { firebase_storage_ref, firestore } from '../../database/firebaseDB';
 import FormButton from '../../components/FormButton';
 import { windowHeight, windowWidth } from '../../utils/Dimensions';
 import { AuthContext } from '../../navigations/AuthProvider';
@@ -19,6 +19,7 @@ const UserSubmit = () => {
   const [image, setImage] = useState(null);
   const [info, setInfo] = useState('');
   const { user } = useContext(AuthContext);
+  const docRef = firestore.collection('active').doc(user.email);
 
   const uploadImage = async (uri) => {
     const res = await fetch(uri);
@@ -41,7 +42,6 @@ const UserSubmit = () => {
     const res = await uploadImage(image);
     const { bucket, fullPath } = res.metadata;
     console.log(`gs://${bucket}/${fullPath}`);
-    Alert.alert('Success');
   };
 
   return (
