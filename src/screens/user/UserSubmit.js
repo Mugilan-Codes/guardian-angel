@@ -25,13 +25,13 @@ const UserSubmit = () => {
     const res = await fetch(uri);
     const blob = await res.blob();
 
-    const ref = firebase_storage_ref.child('images/test.jpg');
+    const ref = firebase_storage_ref.child(`images/${user.uid}.jpg`);
     return ref.put(blob);
   };
 
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync();
-    // console.log(result);
+    console.log({ result });
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -41,7 +41,14 @@ const UserSubmit = () => {
   const handleSubmit = async () => {
     const res = await uploadImage(image);
     const { bucket, fullPath } = res.metadata;
+    const photo_url = `gs://${bucket}/${fullPath}`;
     console.log(`gs://${bucket}/${fullPath}`);
+    await docRef.set({
+      user_id: user.uid,
+      photo_url,
+      accepted: false,
+      completed: false,
+    });
   };
 
   return (
