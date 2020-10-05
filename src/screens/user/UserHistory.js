@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const UserHistory = () => {
   return (
     <View style={styles.container}>
-      <Text>User History</Text>
+      <Text style={styles.text}>No History as of Now</Text>
     </View>
   );
 };
@@ -14,6 +14,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#777',
+  },
+  text: {
+    fontSize: 25,
+    fontStyle: 'italic',
+    color: '#333',
   },
 });
 

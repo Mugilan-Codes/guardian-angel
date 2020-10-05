@@ -38,6 +38,11 @@ const UserSubmit = () => {
 
       const data = await activeDocRef.get();
       if (data.exists) {
+        if (data.data().accepted) {
+          console.log('Accepted');
+          // Tracking Details
+        }
+
         if (data.data().completed) {
           await saverDocRef.update({
             history: firebase_instance.firestore.FieldValue.arrayUnion(
@@ -66,8 +71,8 @@ const UserSubmit = () => {
 
     const ref = firebase_storage_ref.child(`images/${user.uid}.jpg`).put(blob);
 
-    ref.snapshot.ref.getDownloadURL().then(function (url) {
-      console.log(`Donwload URL = ${url}`);
+    ref.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+      console.log(`Donwload URL = ${downloadURL}`);
     });
 
     return ref;
@@ -87,11 +92,11 @@ const UserSubmit = () => {
     const { bucket, fullPath } = res.metadata;
     const photo_url = `gs://${bucket}/${fullPath}`;
     await _requestCurrentLocation();
-    console.log(latitude, longitude);
     await activeDocRef.set({
       user_id: user.uid,
       user_email: user.email,
       photo_url,
+      info,
       accepted: false,
       completed: false,
       location: new firebase_instance.firestore.GeoPoint(latitude, longitude),
