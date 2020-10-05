@@ -1,35 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, View } from 'react-native';
 import * as Location from 'expo-location';
 import MapView from 'react-native-maps';
 
 const GuardianMap = () => {
-  const [location, setLocation] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
 
+  const _requestLocationPermission = async () => {
+    let { status } = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+      setErrorMessage('Permission needs to be given for map');
+    }
+  };
+
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMessage('Permission needs to be given for map');
-      }
+      // let { status } = await Location.requestPermissionsAsync();
+      // if (status !== 'granted') {
+      //   setErrorMessage('Permission needs to be given for map');
+      // }
 
-      let location = await Location.getCurrentPositionAsync();
-      setLocation(location);
-      setLatitude(location.coords.latitude);
-      setLongitude(location.coords.longitude);
+      let {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync();
+      setLatitude(latitude);
+      setLongitude(longitude);
     })();
-  }, []);
-
-  let text = 'Waiting...';
-  if (errorMessage) {
-    text = errorMessage;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-  console.log(text);
+  }, [Location]);
 
   return (
     <View style={styles.container}>
@@ -41,10 +40,13 @@ const GuardianMap = () => {
           longitudeDelta: 0.009,
         }}
         showsUserLocation
+        showsMyLocationButton={true}
+        onMapReady={() => _requestLocationPermission()}
         rotateEnabled={false}
         mapType='hybrid'
         style={styles.mapStyle}
       />
+      {errorMessage ? Alert.alert('Error', errorMessage) : null}
     </View>
   );
 };

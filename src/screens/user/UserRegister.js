@@ -29,6 +29,7 @@ const UserRegister = ({ navigation }) => {
       password,
       created_on: new Date(),
       updated_on: new Date(),
+      active: false,
     });
   };
 
