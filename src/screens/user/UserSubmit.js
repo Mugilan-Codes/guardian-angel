@@ -29,29 +29,6 @@ const UserSubmit = () => {
   const activeDocRef = firestore.collection('active').doc(user.email);
   const saverDocRef = firestore.collection('savers').doc(user.email);
 
-  useEffect(() => {
-    (async () => {
-      const data = await activeDocRef.get();
-      if (data.exists) {
-        if (data.data().accepted) {
-          console.log('Accepted');
-          // Tracking Details
-        }
-
-        if (data.data().completed) {
-          await saverDocRef.update({
-            history: firebase_instance.firestore.FieldValue.arrayUnion(
-              data.data()
-            ),
-            active: false,
-          });
-
-          await activeDocRef.delete();
-        }
-      }
-    })();
-  }, [Location]);
-
   const _requestCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
