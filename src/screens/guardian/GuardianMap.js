@@ -10,14 +10,18 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Callout, Marker } from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
+import GetDirections from 'react-native-google-maps-directions';
 
 import { firebase_instance, firestore } from '../../database/firebaseDB';
 import { AuthContext } from '../../navigations/AuthProvider';
+import { GOOGLE_MAP_API_KEY } from '../../../config';
 
 const GuardianMap = () => {
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [available, setAvailable] = useState(true);
+  const [guardianData, setGuardianData] = useState({});
   const [activeData, setActiveData] = useState({
     location: {
       latitude,
@@ -38,6 +42,8 @@ const GuardianMap = () => {
       setLatitude(latitude);
       setLongitude(longitude);
 
+      setGuardianData((await guardianDocRef.get()).data());
+
       guardianDocRef.onSnapshot(function (doc) {
         setAvailable(doc.data().available);
       });
@@ -52,6 +58,18 @@ const GuardianMap = () => {
               activeCollectionRef
                 .doc(doc.data().email)
                 .update({ accepted: true });
+              activeCollectionRef.doc(doc.data().email).set({
+                tracking: {
+                  email: guardianData.email,
+                  name: guardianData.name,
+                  phone_number: guardianData.phone_number,
+                  vehicle_number: guardianData.vehicle_number,
+                  location: new firebase_instance.firestore.GeoPoint(
+                    latitude,
+                    longitude
+                  ),
+                },
+              });
               guardianDocRef.update({ available: false });
               return;
             }
@@ -59,7 +77,7 @@ const GuardianMap = () => {
         });
       }
     })();
-  }, [Location]);
+  }, []);
 
   const _requestLocationPermission = async () => {
     let { status } = await Location.requestPermissionsAsync();
@@ -80,6 +98,21 @@ const GuardianMap = () => {
     await activeCollectionRef.doc(activeData.email).delete();
     setActiveData({});
     // setAvailable(true);
+  };
+
+  const handleGetDirections = () => {
+    const data = {
+      destination: {
+        latitude: activeData.location.latitude,
+        longitude: activeData.location.longitude,
+      },
+      params: [
+        { key: 'travelmode', value: 'driving' },
+        { key: 'dir_action', value: 'navigate' },
+      ],
+    };
+
+    GetDirections(data);
   };
 
   return (
@@ -107,6 +140,16 @@ const GuardianMap = () => {
         )}
       </MapView>
       {!available && (
+        <Callout style={styles.getDirection}>
+          <TouchableOpacity
+            style={styles.touchableContainer}
+            onPress={handleGetDirections}
+          >
+            <Text style={styles.touchableText}>Open Maps</Text>
+          </TouchableOpacity>
+        </Callout>
+      )}
+      {!available && (
         <Callout style={styles.calloutBtn}>
           <TouchableOpacity
             style={styles.touchableContainer}
@@ -133,6 +176,12 @@ const styles = StyleSheet.create({
   calloutBtn: {
     position: 'absolute',
     right: 10,
+    bottom: 10,
+    backgroundColor: '#3443df',
+  },
+  getDirection: {
+    position: 'absolute',
+    left: 10,
     bottom: 10,
     backgroundColor: '#3443df',
   },

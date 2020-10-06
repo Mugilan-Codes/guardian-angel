@@ -31,11 +31,6 @@ const UserSubmit = () => {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Location Permission is required');
-      }
-
       const data = await activeDocRef.get();
       if (data.exists) {
         if (data.data().accepted) {
@@ -58,12 +53,15 @@ const UserSubmit = () => {
   }, [Location]);
 
   const _requestCurrentLocation = async () => {
-    let {
-      coords: { latitude, longitude },
-    } = await Location.getCurrentPositionAsync();
+    let { status } = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Location Permission is required');
+    }
 
-    setLatitude(latitude);
-    setLongitude(longitude);
+    let { coords } = await Location.getCurrentPositionAsync();
+
+    setLatitude(coords.latitude);
+    setLongitude(coords.longitude);
   };
 
   const uploadImage = async (uri) => {
@@ -93,6 +91,7 @@ const UserSubmit = () => {
     const { bucket, fullPath } = res.metadata;
     const photo_url = `gs://${bucket}/${fullPath}`;
     await _requestCurrentLocation();
+    console.log(latitude, longitude);
     await activeDocRef.set({
       user_id: user.uid,
       email: user.email,
@@ -103,6 +102,8 @@ const UserSubmit = () => {
       location: new firebase_instance.firestore.GeoPoint(latitude, longitude),
     });
     await saverDocRef.update({ active: true });
+    setImage(null);
+    setInfo('');
   };
 
   return (
