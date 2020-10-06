@@ -48,6 +48,7 @@ const UserSubmit = () => {
             history: firebase_instance.firestore.FieldValue.arrayUnion(
               data.data()
             ),
+            active: false,
           });
 
           await activeDocRef.delete();
@@ -94,7 +95,7 @@ const UserSubmit = () => {
     await _requestCurrentLocation();
     await activeDocRef.set({
       user_id: user.uid,
-      user_email: user.email,
+      email: user.email,
       photo_url,
       info,
       accepted: false,
