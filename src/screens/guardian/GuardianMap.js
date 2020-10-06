@@ -10,12 +10,10 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Callout, Marker } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
 import GetDirections from 'react-native-google-maps-directions';
 
 import { firebase_instance, firestore } from '../../database/firebaseDB';
 import { AuthContext } from '../../navigations/AuthProvider';
-import { GOOGLE_MAP_API_KEY } from '../../../config';
 
 const GuardianMap = () => {
   const [latitude, setLatitude] = useState(0);
