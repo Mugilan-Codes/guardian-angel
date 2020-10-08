@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+import { firestore } from '../../database/firebaseDB';
+import { AuthContext } from '../../navigations/AuthProvider';
+
 const UserHistory = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>No History as of Now</Text>
-    </View>
-  );
+  const [history, setHistory] = useState([]);
+
+  const { user } = useContext(AuthContext);
+
+  const docRef = firestore.collection('savers').doc(user.email);
+
+  useEffect(() => {
+    docRef.onSnapshot((doc) => {
+      setHistory(doc.data().history);
+    });
+  }, []);
+
+  const renderItems = history.map((hist, idx) => {
+    console.log(hist);
+    return (
+      <Text style={styles.text} key={idx}>
+        {hist.info}
+      </Text>
+    );
+  });
+
+  return <View style={styles.container}>{renderItems}</View>;
 };
 
 const styles = StyleSheet.create({

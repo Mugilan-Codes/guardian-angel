@@ -74,6 +74,8 @@ const GuardianMap = () => {
           });
         });
       }
+
+      // Update Guardian Location every 5 seconds to active collection
     })();
   }, []);
 
