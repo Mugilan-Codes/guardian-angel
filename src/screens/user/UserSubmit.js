@@ -29,6 +29,10 @@ const UserSubmit = () => {
   const activeDocRef = firestore.collection('active').doc(user.email);
   const saverDocRef = firestore.collection('savers').doc(user.email);
 
+  useEffect(() => {
+    _requestCurrentLocation();
+  }, []);
+
   const _requestCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -45,7 +49,9 @@ const UserSubmit = () => {
     const res = await fetch(uri);
     const blob = await res.blob();
 
-    const ref = firebase_storage_ref.child(`images/${user.uid}.jpg`).put(blob);
+    const ref = firebase_storage_ref
+      .child(`images/${user.uid}/${new Date().toISOString()}.jpg`)
+      .put(blob);
 
     ref.snapshot.ref.getDownloadURL().then(function (downloadURL) {
       console.log(`Donwload URL = ${downloadURL}`);
@@ -70,7 +76,6 @@ const UserSubmit = () => {
     await _requestCurrentLocation();
     console.log(latitude, longitude);
     await activeDocRef.set({
-      user_id: user.uid,
       email: user.email,
       photo_url,
       info,
@@ -83,6 +88,7 @@ const UserSubmit = () => {
     setInfo('');
   };
 
+  // Create Modal for this update photo action
   return (
     <View style={styles.contatiner}>
       <Text>{user.email}</Text>
