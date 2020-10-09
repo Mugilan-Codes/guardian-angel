@@ -39,6 +39,33 @@ const UserSubmit = () => {
   useEffect(() => {
     _requestCurrentLocation();
 
+    activeDocRef.onSnapshot((doc) => {
+      if (doc.data().accepted) {
+        // action to perform if accepted
+      }
+
+      if (doc.data().completed) {
+        console.log(doc.data());
+        const histObj = {
+          photo_url: doc.data().photo_url,
+          info: doc.data().info,
+          location: doc.data().location,
+          date: firebase_instance.firestore.FieldValue.serverTimestamp(),
+          guardian: {
+            email: doc.data().tracking.guardian_email,
+            intial_location: doc.data().tracking.intial_location,
+            name: doc.data().tracking.name,
+            phone_number: doc.data().tracking.phone_number,
+            vehicle_number: doc.data().tracking.vehicle_number,
+          },
+        };
+        saverDocRef.update({
+          active: false,
+          history: firebase_instance.firestore.FieldValue.arrayUnion(histObj),
+        });
+      }
+    });
+
     saverDocRef.onSnapshot((doc) => {
       setActive(doc.data().active);
     });
@@ -86,7 +113,7 @@ const UserSubmit = () => {
     const photo_url = `gs://${bucket}/${fullPath}`;
     console.log({ photo_url });
     await _requestCurrentLocation();
-    console.log(latitude, longitude);
+    console.log({ latitude, longitude });
     await activeDocRef.set({
       email: user.email,
       photo_url,

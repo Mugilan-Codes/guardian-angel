@@ -29,7 +29,6 @@ const GuardianMap = () => {
   const { user } = useContext(AuthContext);
 
   const activeCollectionRef = firestore.collection('active');
-  const saverCollectionRef = firestore.collection('savers');
   const guardianDocRef = firestore.collection('guardians').doc(user.email);
 
   useEffect(() => {
@@ -46,13 +45,24 @@ const GuardianMap = () => {
         setAvailable(doc.data().available);
       });
 
+      if (!available) {
+        await activeCollectionRef.doc(activeData.email).update({
+          tracking: {
+            coords: new firebase_instance.firestore.GeoPoint(
+              latitude,
+              longitude
+            ),
+            updated_on: firebase_instance.firestore.FieldValue.serverTimestamp(),
+          },
+        });
+      }
+
       // Handle Guardian Availability and Active cases
       if (available) {
         await activeCollectionRef.get().then(function (querySnapshot) {
           querySnapshot.forEach(function (doc) {
             if (!doc.data().accepted && doc.data().accepted !== undefined) {
               setActiveData(doc.data());
-              setAvailable(false);
               activeCollectionRef
                 .doc(doc.data().email)
                 .update({ accepted: true });
@@ -62,10 +72,15 @@ const GuardianMap = () => {
                   name: guardianData.name,
                   phone_number: guardianData.phone_number,
                   vehicle_number: guardianData.vehicle_number,
-                  location: new firebase_instance.firestore.GeoPoint(
+                  initial_location: new firebase_instance.firestore.GeoPoint(
                     latitude,
                     longitude
                   ),
+                  // coords: new firebase_instance.firestore.GeoPoint(
+                  //   latitude,
+                  //   longitude
+                  // ),
+                  // updated_on: firebase_instance.firestore.FieldValue.serverTimestamp(),
                 },
               });
               guardianDocRef.update({ available: false });
@@ -88,16 +103,11 @@ const GuardianMap = () => {
 
   const completePickUp = async () => {
     await activeCollectionRef.doc(activeData.email).update({ completed: true });
-    await saverCollectionRef.doc(activeData.email).update({
-      history: firebase_instance.firestore.FieldValue.arrayUnion(activeData),
-    });
     await guardianDocRef.update({
       available: true,
       history: firebase_instance.firestore.FieldValue.arrayUnion(activeData),
     });
-    await activeCollectionRef.doc(activeData.email).delete();
     setActiveData({});
-    // setAvailable(true);
   };
 
   const handleGetDirections = () => {
@@ -125,7 +135,7 @@ const GuardianMap = () => {
           longitudeDelta: 0.004,
         }}
         showsUserLocation
-        onMapReady={() => _requestLocationPermission()}
+        onMapReady={_requestLocationPermission}
         rotateEnabled={false}
         mapType='hybrid'
         style={styles.mapStyle}
