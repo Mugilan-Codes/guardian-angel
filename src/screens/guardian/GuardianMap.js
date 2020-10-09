@@ -11,9 +11,12 @@ import {
 import * as Location from 'expo-location';
 import MapView, { Callout, Marker } from 'react-native-maps';
 import GetDirections from 'react-native-google-maps-directions';
+import * as TaskManager from 'expo-task-manager';
 
 import { firebase_instance, firestore } from '../../database/firebaseDB';
 import { AuthContext } from '../../navigations/AuthProvider';
+
+const BACKGROUND_LOCATION_TASK = 'background_location_task';
 
 const GuardianMap = () => {
   const [latitude, setLatitude] = useState(0);
@@ -44,18 +47,6 @@ const GuardianMap = () => {
       guardianDocRef.onSnapshot(function (doc) {
         setAvailable(doc.data().available);
       });
-
-      if (!available) {
-        await activeCollectionRef.doc(activeData.email).update({
-          tracking: {
-            coords: new firebase_instance.firestore.GeoPoint(
-              latitude,
-              longitude
-            ),
-            updated_on: firebase_instance.firestore.FieldValue.serverTimestamp(),
-          },
-        });
-      }
 
       // Handle Guardian Availability and Active cases
       if (available) {
@@ -91,6 +82,34 @@ const GuardianMap = () => {
       }
 
       // Update Guardian Location every 5 seconds to active collection
+      if (!available) {
+        await activeCollectionRef.doc(activeData.email).update({
+          tracking: {
+            coords: new firebase_instance.firestore.GeoPoint(
+              latitude,
+              longitude
+            ),
+            updated_on: firebase_instance.firestore.FieldValue.serverTimestamp(),
+          },
+        });
+
+        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+          accuracy: Location.Accuracy.BestForNavigation,
+          timeInterval: 5000,
+          activityType: Location.ActivityType.AutomotiveNavigation,
+        });
+      }
+
+      TaskManager.defineTask(
+        BACKGROUND_LOCATION_TASK,
+        ({ data: { locations }, error }) => {
+          if (error) {
+            console.log(`${error.code} - ${error.message}`);
+            return;
+          }
+          console.log(locations);
+        }
+      );
     })();
   }, []);
 
