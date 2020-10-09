@@ -8,6 +8,10 @@
 - Nivethithaa M - [Github](https://github.com/Nivethithaa-M)
 - Shalini N - [Github](https://github.com/Shalini-CEG)
 
+> Project Link
+
+[Guardian Angel Source Code](https://github.com/Mugilan-Codes/guardian-angel)
+
 #### How to Run the app
 
 1. Git clone the project into your local computer
@@ -67,10 +71,47 @@
     git fetch origin
     ```
 
+1. Reset Local copy to match remote master
 
-> Project Link
+    ```git
+    git reset --hard origin/master
+    ```
 
-[Guardian Angel Source Code](https://github.com/Mugilan-Codes/guardian-angel)
+1. Create and checkout a new feature branch (use this format).
+
+    ```git
+    git checkout -b <your-name>/<feature-name>
+    ```
+
+    eg. `git checkout -b mugilan/map-integration`
+
+1. Make Changes and Commit those changes
+
+    ```git
+    git status
+    git add <file-name>
+    git commit -m "<some-meaningfull-commit-message>"
+    ```
+
+1. Push the changes to remote
+
+    ```git
+    git push -u origin <your-name>/<feature-name>
+    ```
+
+1. Go to Github to make a PR(Pull Request). Submit PR with Meaningfull comments. Wait for approval and merge.
+
+1. Delete Local Branches Safely.
+
+    ```git
+    git branch -d <your-name>/<feature-name>
+    ```
+
+1. Sync with the remote branches by pruning deleted remote branches
+
+    ```git
+    git fetch -p
+    ```
 
 #### TODO
 
