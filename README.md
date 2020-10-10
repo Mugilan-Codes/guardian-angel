@@ -26,7 +26,7 @@
     cd guardian-angel
     ```
 
-1. Add config.js file to the root of the project(firbase connection)
+1. Add config.js and google-services.json file to the root of the project(firbase connection)
 
     > config.js
 
@@ -42,8 +42,6 @@
         measurementId: "<MEASUREMENT_ID>",
     };
     ```
-
-1. Add google-services.json file also.
 
 1. Install the App Dependencies
 
@@ -101,7 +99,7 @@
 
 1. Go to Github to make a PR(Pull Request). Submit PR with Meaningfull comments. Wait for approval and merge.
 
-1. Delete Local Branches Safely.
+1. Delete Local Branches Safely. (checkout master branch)
 
     ```git
     git branch -d <your-name>/<feature-name>
