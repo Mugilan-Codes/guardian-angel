@@ -39,39 +39,39 @@ const UserSubmit = () => {
   useEffect(() => {
     _requestCurrentLocation();
 
+    saverDocRef.onSnapshot((doc) => {
+      setActive(doc.data().active);
+    });
+
     activeDocRef.onSnapshot((doc) => {
       if (doc.data()) {
         if (doc.data().accepted) {
           console.log('Trip Accepted');
-        }
-
-        if (doc.data().completed) {
           console.log(doc.data());
-          const histObj = {
-            photo_url: doc.data().photo_url,
-            info: doc.data().info,
-            location: doc.data().location,
-            date: firebase_instance.firestore.FieldValue.serverTimestamp(),
-            guardian: {
-              email: doc.data().tracking.guardian_email,
-              intial_location: doc.data().tracking.intial_location,
-              name: doc.data().tracking.name,
-              phone_number: doc.data().tracking.phone_number,
-              vehicle_number: doc.data().tracking.vehicle_number,
-            },
-          };
-          saverDocRef.update({
-            active: false,
-            history: firebase_instance.firestore.FieldValue.arrayUnion(histObj),
-          });
+
+          if (doc.data().completed) {
+            saverDocRef.update({
+              active: false,
+              history: firebase_instance.firestore.FieldValue.arrayUnion({
+                photo_url: doc.data().photo_url,
+                info: doc.data().info,
+                location: doc.data().location,
+                date: new Date(),
+                guardian: {
+                  email: doc.data().tracking.guardian_email,
+                  initial_location: doc.data().tracking.initial_location,
+                  name: doc.data().tracking.name,
+                  phone_number: doc.data().tracking.phone_number,
+                  vehicle_number: doc.data().tracking.vehicle_number,
+                },
+              }),
+            });
+            setActive(false);
+          }
         }
       }
     });
-
-    saverDocRef.onSnapshot((doc) => {
-      setActive(doc.data().active);
-    });
-  }, []);
+  }, [_requestCurrentLocation]);
 
   const _requestCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
@@ -93,16 +93,11 @@ const UserSubmit = () => {
       .child(`images/${user.uid}/${new Date().toISOString()}.jpg`)
       .put(blob);
 
-    // ref.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-    //   console.log(`Donwload URL = ${downloadURL}`);
-    // });
-
     return ref;
   };
 
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync();
-    // console.log({ result });
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -113,9 +108,7 @@ const UserSubmit = () => {
     const res = await uploadImage(image);
     const { bucket, fullPath } = res.metadata;
     const photo_url = `gs://${bucket}/${fullPath}`;
-    console.log({ photo_url });
     await _requestCurrentLocation();
-    console.log({ latitude, longitude });
     await activeDocRef.set({
       email: user.email,
       photo_url,
@@ -126,22 +119,17 @@ const UserSubmit = () => {
       location: new firebase_instance.firestore.GeoPoint(latitude, longitude),
     });
     await saverDocRef.update({ active: true });
+    setModalVisible(!modalVisible);
     setImage(null);
     setInfo('');
-    setModalVisible(!modalVisible);
   };
 
-  // Create Modal for this update photo action
   return (
     <View style={styles.contatiner}>
       <Modal visible={modalVisible} animationType='slide'>
         <View style={styles.contatiner}>
-          {/* <Text>{user.email}</Text> */}
           {image && <Image source={{ uri: image }} style={styles.imageStyle} />}
           <Button title='Take Photo' onPress={takePhoto} />
-          {/* <Text>
-            Latitutde: {latitude} - Longitude: {longitude}
-          </Text> */}
           <TextInput
             value={info}
             style={styles.input}
@@ -211,7 +199,7 @@ const styles = StyleSheet.create({
   },
   mapStyle: {
     width: windowWidth,
-    height: windowHeight / 1.05,
+    height: windowHeight / 1.07,
   },
   calloutBtn: {
     position: 'absolute',
