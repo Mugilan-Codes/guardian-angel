@@ -11,7 +11,6 @@ import {
 import * as Location from 'expo-location';
 import MapView, { Callout, Marker } from 'react-native-maps';
 import GetDirections from 'react-native-google-maps-directions';
-import * as TaskManager from 'expo-task-manager';
 
 import { firebase_instance, firestore } from '../../database/firebaseDB';
 import { AuthContext } from '../../navigations/AuthProvider';
@@ -31,8 +30,7 @@ const GuardianMap = () => {
 
   const activeCollectionRef = firestore.collection('active');
   const guardianDocRef = firestore.collection('guardians').doc(user.email);
-
-  const BACKGROUND_LOCATION_TASK = 'background_location_task';
+  const saverCollectionRef = firestore.collection('savers');
 
   useEffect(() => {
     (async () => {
@@ -51,20 +49,33 @@ const GuardianMap = () => {
             if (!doc.data().accepted && doc.data().accepted !== undefined) {
               activeCollectionRef
                 .doc(doc.data().email)
-                .update({ accepted: true });
-              activeCollectionRef.doc(doc.data().email).update({
-                tracking: {
-                  email: guardianData.email,
-                  name: guardianData.name,
-                  phone_number: guardianData.phone_number,
-                  vehicle_number: guardianData.vehicle_number,
-                  initial_location: new firebase_instance.firestore.GeoPoint(
-                    latitude,
-                    longitude
-                  ),
-                },
-              });
-              setActiveData(doc.data());
+                .set(
+                  {
+                    accepted: true,
+                    tracking: {
+                      email: guardianData.email,
+                      name: guardianData.name,
+                      phone_number: guardianData.phone_number,
+                      vehicle_number: guardianData.vehicle_number,
+                      initial_location: new firebase_instance.firestore.GeoPoint(
+                        latitude,
+                        longitude
+                      ),
+                    },
+                  },
+                  { merge: true }
+                )
+                .then(() => {
+                  console.log('Updated');
+                });
+              activeCollectionRef
+                .doc(doc.data().email)
+                .get()
+                .then((doc) => {
+                  if (doc.exists) {
+                    setActiveData(doc.data());
+                  }
+                });
               guardianDocRef.update({ available: false });
               setAvailable(false);
               return;
@@ -75,40 +86,26 @@ const GuardianMap = () => {
 
       // Update Guardian Location every 5 seconds to active collection
       if (!available) {
-        await activeCollectionRef.doc(activeData.email).update({
-          'tracking.coords': new firebase_instance.firestore.GeoPoint(
-            latitude,
-            longitude
-          ),
-          'tracking.updated_on': firebase_instance.firestore.FieldValue.serverTimestamp(),
-        });
-
-        TaskManager.defineTask(
-          BACKGROUND_LOCATION_TASK,
-          ({ data: { locations }, error }) => {
-            if (error) {
-              console.log(`${error.code} - ${error.message}`);
-              return;
-            }
-            console.log(locations.coords);
-            setLatitude(locations.coords.latitude);
-            setLongitude(locations.coords.longitude);
-          }
-        );
+        setInterval(() => trackingUpdate(), 5000);
       }
     })();
   }, [_requestCurrentLocation]);
+
+  const trackingUpdate = async () => {
+    await _requestCurrentLocation();
+    await activeCollectionRef.doc(activeData.email).update({
+      'tracking.coords': new firebase_instance.firestore.GeoPoint(
+        latitude,
+        longitude
+      ),
+      'tracking.updated_on': firebase_instance.firestore.FieldValue.serverTimestamp(),
+    });
+  };
 
   const _requestCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Location Permission is required');
-    } else {
-      await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
-        accuracy: Location.Accuracy.BestForNavigation,
-        timeInterval: 5000,
-        activityType: Location.ActivityType.AutomotiveNavigation,
-      });
     }
 
     let { coords } = await Location.getCurrentPositionAsync();
@@ -120,7 +117,7 @@ const GuardianMap = () => {
   const completePickUp = async () => {
     setAvailable(true);
     await guardianDocRef.update({
-      available,
+      available: true,
       history: firebase_instance.firestore.FieldValue.arrayUnion({
         user_email: activeData.email,
         timestamp: new Date(),
@@ -130,10 +127,27 @@ const GuardianMap = () => {
         info: activeData.info,
       }),
     });
+    await saverCollectionRef.doc(activeData.email).update({
+      active: false,
+      history: firebase_instance.firestore.FieldValue.arrayUnion({
+        photo_url: activeData.photo_url,
+        info: activeData.info,
+        location: activeData.location,
+        date: new Date(),
+        guardian_email: guardianData.email,
+        guardian_location: activeData.tracking.initial_location,
+        guardian_name: guardianData.name,
+        guardian_phone_number: guardianData.phone_number,
+        guardian_vehicle_number: guardianData.vehicle_number,
+      }),
+    });
     await activeCollectionRef.doc(activeData.email).update({ completed: true });
-    // setActiveData({});
-    await TaskManager.unregisterAllTasksAsync();
-    // await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+    setActiveData({
+      location: {
+        latitude,
+        longitude,
+      },
+    });
   };
 
   const handleGetDirections = () => {

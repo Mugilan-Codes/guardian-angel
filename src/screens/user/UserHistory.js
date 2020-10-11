@@ -17,14 +17,18 @@ const UserHistory = () => {
     });
   }, []);
 
-  const renderItems = history.map((hist, idx) => {
-    console.log(hist);
-    return (
-      <Text style={styles.text} key={idx}>
-        {hist.info}
-      </Text>
-    );
-  });
+  const renderItems = history ? (
+    history.map((hist, idx) => {
+      console.log(hist);
+      return (
+        <Text style={styles.text} key={idx}>
+          {hist.info}
+        </Text>
+      );
+    })
+  ) : (
+    <Text style={styles.text}>No history yet</Text>
+  );
 
   return <View style={styles.container}>{renderItems}</View>;
 };

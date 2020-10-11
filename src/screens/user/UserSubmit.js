@@ -45,28 +45,20 @@ const UserSubmit = () => {
 
     activeDocRef.onSnapshot((doc) => {
       if (doc.data()) {
+        console.log('Waiting');
+
         if (doc.data().accepted) {
           console.log('Trip Accepted');
           console.log(doc.data());
 
           if (doc.data().completed) {
-            saverDocRef.update({
-              active: false,
-              history: firebase_instance.firestore.FieldValue.arrayUnion({
-                photo_url: doc.data().photo_url,
-                info: doc.data().info,
-                location: doc.data().location,
-                date: new Date(),
-                guardian: {
-                  email: doc.data().tracking.guardian_email,
-                  initial_location: doc.data().tracking.initial_location,
-                  name: doc.data().tracking.name,
-                  phone_number: doc.data().tracking.phone_number,
-                  vehicle_number: doc.data().tracking.vehicle_number,
-                },
-              }),
-            });
             setActive(false);
+            saverDocRef.update({ active: false }).then(() => {
+              console.log('Set Active to false');
+            });
+            doc.ref.delete().then(() => {
+              console.log('Active Data Deleted');
+            });
           }
         }
       }
@@ -117,6 +109,7 @@ const UserSubmit = () => {
       completed: false,
       timestamp: firebase_instance.firestore.FieldValue.serverTimestamp(),
       location: new firebase_instance.firestore.GeoPoint(latitude, longitude),
+      tracking: {},
     });
     await saverDocRef.update({ active: true });
     setModalVisible(!modalVisible);
