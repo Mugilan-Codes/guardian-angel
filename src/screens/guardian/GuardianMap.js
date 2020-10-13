@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -7,13 +7,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-} from 'react-native';
-import * as Location from 'expo-location';
-import MapView, { Callout, Marker } from 'react-native-maps';
-import GetDirections from 'react-native-google-maps-directions';
+} from "react-native";
+import * as Location from "expo-location";
+import MapView, { Callout, Marker } from "react-native-maps";
+import GetDirections from "react-native-google-maps-directions";
 
-import { firebase_instance, firestore } from '../../database/firebaseDB';
-import { AuthContext } from '../../navigations/AuthProvider';
+import { firebase_instance, firestore } from "../../database/firebaseDB";
+import { AuthContext } from "../../navigations/AuthProvider";
 
 const GuardianMap = () => {
   const [latitude, setLatitude] = useState(0);
@@ -28,9 +28,9 @@ const GuardianMap = () => {
   });
   const { user } = useContext(AuthContext);
 
-  const activeCollectionRef = firestore.collection('active');
-  const guardianDocRef = firestore.collection('guardians').doc(user.email);
-  const saverCollectionRef = firestore.collection('savers');
+  const activeCollectionRef = firestore.collection("active");
+  const guardianDocRef = firestore.collection("guardians").doc(user.email);
+  const saverCollectionRef = firestore.collection("savers");
 
   useEffect(() => {
     (async () => {
@@ -66,7 +66,7 @@ const GuardianMap = () => {
                   { merge: true }
                 )
                 .then(() => {
-                  console.log('Updated');
+                  console.log("Updated");
                 });
               activeCollectionRef
                 .doc(doc.data().email)
@@ -94,18 +94,18 @@ const GuardianMap = () => {
   const trackingUpdate = async () => {
     await _requestCurrentLocation();
     await activeCollectionRef.doc(activeData.email).update({
-      'tracking.coords': new firebase_instance.firestore.GeoPoint(
+      "tracking.coords": new firebase_instance.firestore.GeoPoint(
         latitude,
         longitude
       ),
-      'tracking.updated_on': firebase_instance.firestore.FieldValue.serverTimestamp(),
+      "tracking.updated_on": firebase_instance.firestore.FieldValue.serverTimestamp(),
     });
   };
 
   const _requestCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Location Permission is required');
+    if (status !== "granted") {
+      Alert.alert("Location Permission is required");
     }
 
     let { coords } = await Location.getCurrentPositionAsync();
@@ -157,8 +157,8 @@ const GuardianMap = () => {
         longitude: activeData.location.longitude,
       },
       params: [
-        { key: 'travelmode', value: 'driving' },
-        { key: 'dir_action', value: 'navigate' },
+        { key: "travelmode", value: "driving" },
+        { key: "dir_action", value: "navigate" },
       ],
     };
 
@@ -177,7 +177,7 @@ const GuardianMap = () => {
         showsUserLocation
         onMapReady={_requestCurrentLocation}
         rotateEnabled={false}
-        mapType='hybrid'
+        mapType="hybrid"
         style={styles.mapStyle}
       >
         {!available && (
@@ -216,31 +216,31 @@ const GuardianMap = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   mapStyle: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height / 1.06,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height / 1.06,
   },
   calloutBtn: {
-    position: 'absolute',
+    position: "absolute",
     right: 10,
     bottom: 10,
-    backgroundColor: '#3443df',
+    backgroundColor: "#3443df",
   },
   getDirection: {
-    position: 'absolute',
+    position: "absolute",
     left: 10,
     bottom: 10,
-    backgroundColor: '#3443df',
+    backgroundColor: "#3443df",
   },
   touchableContainer: {
     padding: 10,
   },
   touchableText: {
     fontSize: 24,
-    color: '#fff',
+    color: "#fff",
   },
 });
 
